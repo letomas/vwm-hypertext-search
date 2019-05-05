@@ -1,4 +1,5 @@
 import numpy as np
+import scraper
 
 
 def pagerankPowerMethod(H, a, eps = 1.0e-8, alpha = 0.85, iterations = 50):
