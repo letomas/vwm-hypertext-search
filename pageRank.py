@@ -33,9 +33,18 @@ def pageRank(H, a, eps = 1.0e-8, alpha = 0.85, iterations = 50):
         
     return v
 
-def calculateDanglingVector(size):
+def calculateDanglingVector(H):
     a = H.shape[0] * [0]
     for i in range(H.shape[0]):
         if np.count_nonzero(H[i]) == 0:
             a[i] = 1
     return np.asmatrix(a)
+
+
+def replaceZeros(a, H, num = 1.0e-8):
+    a = np.array(a)
+    M = H
+    for i in range(H.shape[0]):
+        if a.item(i) == 0:
+            M[i,:] = np.where(M[i,:] == 0, num, M[i,:])
+    return M
