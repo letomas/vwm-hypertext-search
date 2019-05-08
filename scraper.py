@@ -7,9 +7,10 @@ import json
 import sys
 
 def crawlAndCreateMatrix(start_url, pagesToScrape):
-    if !pagesToScrape == 1:
-    print("Please specify how many URLs you want to scrape")
-    exit(1)
+    try:
+        isInt = int(pagesToScrape)
+    except:
+        exit(1)
 
     number_to_scrape = int(pagesToScrape)    
 
@@ -102,6 +103,7 @@ def crawlAndCreateMatrix(start_url, pagesToScrape):
                     H_matrix[i][j] = 0
         else:
             for j in range(count_of_matrix_links):
-                H_matrix[i][j] = 1/count_of_matrix_links
+                H_matrix[i][j] = 0
+
 
     return H_matrix
