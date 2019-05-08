@@ -2,3 +2,5 @@
 launch.json
 settings.json
 search.py
+venv
+.idea
