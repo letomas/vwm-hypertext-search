@@ -7,17 +7,10 @@ import json
 import sys
 
 def crawlAndCreateMatrix(start_url, pagesToScrape):
-<<<<<<< Updated upstream
     try:
         isInt = int(pagesToScrape)
     except:
-=======
-    if !pagesToScrape == 1:
-        print("Please specify how many URLs you want to scrape")
->>>>>>> Stashed changes
         exit(1)
-
-    number_to_scrape = int(pagesToScrape)    
 
     d = deque()
     d.append(start_url)
