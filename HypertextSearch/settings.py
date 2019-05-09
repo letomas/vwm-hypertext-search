@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'hypertext_search.apps.HypertextSearchConfig',
+    'hypertext_search',
 ]
 
 MIDDLEWARE = [
