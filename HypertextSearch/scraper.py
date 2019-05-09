@@ -6,6 +6,7 @@ from collections import deque
 import json
 import sys
 
+
 def crawlAndCreateMatrix(start_url, pagesToScrape):
     try:
         isInt = int(pagesToScrape)
