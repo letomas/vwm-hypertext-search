@@ -77,8 +77,12 @@ WSGI_APPLICATION = 'HypertextSearch.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'djongo',
+        'NAME': 'vwm-hypertext-search',
+        'HOST': 'mongodb://admin:admin1@ds153906.mlab.com:53906/vwm-hypertext-search',
+        'USER': 'admin',
+        'PASSWORD' : 'admin1',
+
     }
 }
 
