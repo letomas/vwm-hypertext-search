@@ -3,8 +3,12 @@ from urllib.error import URLError
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from collections import deque
+import html2text
 import json
 import sys
+
+from .models import WebPage
+
 
 
 def crawlAndCreateMatrix(start_url, pagesToScrape):
@@ -26,6 +30,9 @@ def crawlAndCreateMatrix(start_url, pagesToScrape):
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     }
 
+    html2textObj = html2text.HTML2Text()
+    html2textObj.ignore_links = True
+
     # crawler for the data to setup H_matrix and strings
 
     crawled_link_counter = 0
@@ -43,6 +50,9 @@ def crawlAndCreateMatrix(start_url, pagesToScrape):
             matrix_links.append(crawl_url)
 
         data[crawl_url] = { 'links' :[], 'outlinksCount' : 0}
+
+        crawl_url_content = html2textObj.handle(bsObj.find('html'))
+
         for link in bsObj.find_all('a'):
             reduced_link = link.get('href')
 
@@ -78,6 +88,13 @@ def crawlAndCreateMatrix(start_url, pagesToScrape):
                 matrix_links.append(reduced_link)
 
         data[crawl_url]['outlinksCount'] = len(data[crawl_url]['links'])
+
+        new_webpage = WebPage()
+        new_webpage.url = crawl_url
+        new_webpage.content = crawl_url_content
+        new_webpage.save()
+        
+
         d.popleft()
         
         if not d:
