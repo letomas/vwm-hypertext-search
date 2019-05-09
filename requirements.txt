@@ -1,3 +1,5 @@
+html2text
+django
 elasticsearch==7.0.0
 numpy==1.16.2
 pycurl==7.43.0
@@ -6,3 +8,6 @@ python-apt==1.1.0b1+ubuntu0.16.4.2
 ufw==0.35
 unattended-upgrades==0.1
 urllib3==1.25.2
+urllib
+djongo
+bs4
