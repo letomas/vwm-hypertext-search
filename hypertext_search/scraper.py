@@ -10,10 +10,9 @@ import sys
 from .models import WebPage
 
 
-
-def crawlAndCreateMatrix(start_url, pagesToScrape):
+def crawlAndCreateMatrix(start_url, number_to_scrape):
     try:
-        isInt = int(pagesToScrape)
+        isInt = int(number_to_scrape)
     except:
         exit(1)
 
@@ -51,14 +50,13 @@ def crawlAndCreateMatrix(start_url, pagesToScrape):
 
         data[crawl_url] = { 'links' :[], 'outlinksCount' : 0}
 
-        crawl_url_content = html2textObj.handle(bsObj.find('html'))
+        crawl_url_content = html2textObj.handle(str(bsObj.find('body')))
 
         for link in bsObj.find_all('a'):
             reduced_link = link.get('href')
 
             if reduced_link is None:
                 continue
-
 
             flag = False
             for unallowed_word in unallowed_words:
@@ -89,20 +87,17 @@ def crawlAndCreateMatrix(start_url, pagesToScrape):
 
         data[crawl_url]['outlinksCount'] = len(data[crawl_url]['links'])
 
-        new_webpage = WebPage()
-        new_webpage.url = crawl_url
-        new_webpage.content = crawl_url_content
-        new_webpage.save()
-        
+        # new_webpage = WebPage()
+        # new_webpage.url = crawl_url
+        # new_webpage.content = crawl_url_content
+        # new_webpage.save()
 
         d.popleft()
         
         if not d:
             break
 
-
-    #setting up the H_matrix for page rank
-
+    # setting up the H_matrix for page rank
     existing_keys = data.keys()
     count_of_matrix_links = len(matrix_links)
     H_matrix = [[0 for x in range(count_of_matrix_links)] for y in range(count_of_matrix_links)] 
@@ -120,6 +115,5 @@ def crawlAndCreateMatrix(start_url, pagesToScrape):
         else:
             for j in range(count_of_matrix_links):
                 H_matrix[i][j] = 0
-
 
     return H_matrix
