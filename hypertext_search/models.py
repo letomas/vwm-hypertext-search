@@ -5,7 +5,7 @@ from .search import WebPageIndex
 class WebPage(models.Model):
     url = models.URLField()
     content = models.TextField()
-    rank = models.FloatField()
+    rank = models.FloatField(null=True, blank=True)
 
     def indexing(self):
         obj = WebPageIndex(
