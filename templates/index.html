@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      {% block title %}<title>Search</title>{% endblock %}
+    </head>
+    <body>
+        <div>
+            <form method="post">{% csrf_token %}
+                <input type="text" name="input" id="search-input" placeholder="Pagerank with fulltext search">
+                <input type="submit" name="search">
+            </form>
+        </div>
+        <div>
+            {% block jsem_zrm %}
+                <div> {{test_input}}</div>
+            {% endblock %}
+            <!--<ul>-->
+            <!--</ul>-->
+        </div>
+    </body>
+</html>
