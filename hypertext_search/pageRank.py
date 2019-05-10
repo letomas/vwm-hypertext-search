@@ -51,7 +51,7 @@ def replaceZeros(a, H, num = 1.0e-8):
     return M
 
 def start_ranking():
-    H_matrix = np.array(crawlAndCreateMatrix('https://fit.cvut.cz/', 50))
+    H_matrix = np.array(crawlAndCreateMatrix('https://fit.cvut.cz/', 5))
     dangling_vector = calculateDanglingVector(H_matrix)
     H_matrix_without_zeros = replaceZeros(dangling_vector, H_matrix)
     pageRank_values = pageRank(H_matrix_without_zeros, dangling_vector)

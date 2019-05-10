@@ -63,7 +63,7 @@ def crawlAndCreateMatrix(start_url, number_to_scrape):
                 if unallowed_word in reduced_link:
                     flag = True
                     break
-            
+
             if flag:
                 continue
 
@@ -73,7 +73,7 @@ def crawlAndCreateMatrix(start_url, number_to_scrape):
             if reduced_link in data[crawl_url]['links']:
                 continue
             if crawl_url == reduced_link:
-                continue    
+                continue
 
             if crawled_link_counter < number_to_scrape:
                 if reduced_link not in crawled_links:
@@ -87,13 +87,13 @@ def crawlAndCreateMatrix(start_url, number_to_scrape):
 
         data[crawl_url]['outlinksCount'] = len(data[crawl_url]['links'])
 
-        # new_webpage = WebPage()
-        # new_webpage.url = crawl_url
-        # new_webpage.content = crawl_url_content
-        # new_webpage.save()
+        new_webpage = WebPage()
+        new_webpage.url = crawl_url
+        new_webpage.content = crawl_url_content
+        new_webpage.save()
 
         d.popleft()
-        
+
         if not d:
             break
 

@@ -6,7 +6,7 @@ from .pageRank import start_ranking
 
 def index(request):
     # all_matching_urls = WebPage.objects.all()
-    input_text = request.POST.get('input', '')
+    input_text = request.POST.get('input', 'no input was taken')
 
     return render(request, 'index.html', {'test_input': input_text})
 
