@@ -53,8 +53,12 @@ def replaceZeros(a, H, num = 1.0e-8):
     return M
 
 def match_urls_with_pagerank(urls, page_rank_values):
-    for i in urls.count:
-        WebPage.objects.filter(url=urls[i]).update(rank=page_rank_values.item(i))
+    mongo_urls = WebPage.objects.all()
+    for url in mongo_urls:
+        lookup_index = urls.index(url)
+        #url.update(rank=page_rank_values.item(lookup_index))
+        url.rank = page_rank_values.item(lookup_index)
+        url.save()
 
 def start_ranking():
     crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 5)
