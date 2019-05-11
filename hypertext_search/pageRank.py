@@ -1,40 +1,42 @@
 import numpy as np
-from scraper import crawlAndCreateMatrix
+from hypertext_search.scraper import crawlAndCreateMatrix
+from django.core.exceptions import ObjectDoesNotExist
 
 from .models import WebPage
 
 
-def pagerankPowerMethod(H, a, eps = 1.0e-8, alpha = 0.85, iterations = 50):
-    N = H.shape[1]
-    #initial vector
-    v = np.ones((N, 1)) / N
-    last_v = np.ones((N, 1)) * 100
+def pagerankPowerMethod(H, a, eps=1.0e-8, alpha=0.85, iterations=50):
+    n = H.shape[1]
+    # initial vector
+    v = np.ones((n, 1)) / n
+    last_v = np.ones((n, 1)) * 100
     cnt = 0
     while True:
-        if(np.linalg.norm(v - last_v, 2) < eps or cnt == iterations):
+        if np.linalg.norm(v - last_v, 2) < eps or cnt == iterations:
             break
         last_v = v
         x = alpha * np.matmul(H, v)
-        v = x + (np.matmul(x, a) + 1 - alpha) * np.ones((N,1)) / N
+        v = x + (np.matmul(x, a) + 1 - alpha) * np.ones((n, 1)) / n
         cnt += 1
 
     return v
 
 
-def pageRank(H, a, eps = 1.0e-8, alpha = 0.85, iterations = 50):
-    N = H.shape[1]
-    #initial vector
-    v = np.ones((N, 1)) / N
-    last_v = np.ones((N, 1)) * 100
+def pageRank(H, a, eps=1.0e-8, iterations=50):
+    n = H.shape[1]
+    # initial vector
+    v = np.ones((n, 1)) / n
+    last_v = np.ones((n, 1)) * 100
     cnt = 0
     while True:
-        if(np.linalg.norm(v - last_v, 2) < eps or cnt == iterations):
+        if np.linalg.norm(v - last_v, 2) < eps or cnt == iterations:
             break
         last_v = v
-        v = np.matmul(H, v) + np.matmul(a, np.ones((N,1))) / N
+        v = np.matmul(H, v) + np.matmul(a, np.ones((n, 1))) / n
         cnt += 1
         
     return v
+
 
 def calculateDanglingVector(H):
     a = H.shape[0] * [0]
@@ -49,14 +51,22 @@ def replaceZeros(a, H, num = 1.0e-8):
     M = H
     for i in range(H.shape[0]):
         if a.item(i) == 0:
-            M[i,:] = np.where(M[i,:] == 0, num, M[i,:])
+            M[i, :] = np.where(M[i,:] == 0, num, M[i,:])
     return M
 
+
 def match_urls_with_pagerank(urls, page_rank_values):
-    for i in urls.count:
-        WebPage.objects.filter(url=urls[i]).update(rank=page_rank_values.item(i))
+    for i in range(len(urls)):
+        try:
+            filter_webpage = WebPage.objects.filter(url=urls[i])
+        except ObjectDoesNotExist:
+            pass
+
+        filter_webpage.update(rank=page_rank_values.item(i))
+
 
 def start_ranking():
+    #WebPage.objects.all().delete()
     crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 5)
     H_matrix = np.array(crawl_urls_tuple[1])
     dangling_vector = calculateDanglingVector(H_matrix)

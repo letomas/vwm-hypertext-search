@@ -4,8 +4,8 @@ from .search import WebPageIndex
 
 class WebPage(models.Model):
     url = models.URLField()
+    rank = models.FloatField(null=True, blank=True, default=0)
     content = models.TextField()
-    rank = models.FloatField(null=True, blank=True)
 
     def indexing(self):
         obj = WebPageIndex(
