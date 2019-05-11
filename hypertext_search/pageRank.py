@@ -1,5 +1,7 @@
 import numpy as np
-from .scraper import crawlAndCreateMatrix
+from scraper import crawlAndCreateMatrix
+
+from .models import WebPage
 
 
 def pagerankPowerMethod(H, a, eps = 1.0e-8, alpha = 0.85, iterations = 50):
@@ -50,8 +52,15 @@ def replaceZeros(a, H, num = 1.0e-8):
             M[i,:] = np.where(M[i,:] == 0, num, M[i,:])
     return M
 
+def match_urls_with_pagerank(urls, page_rank_values):
+    for i in urls.count:
+        WebPage.objects.filter(url=urls[i]).update(rank=page_rank_values.item(i))
+
 def start_ranking():
-    H_matrix = np.array(crawlAndCreateMatrix('https://fit.cvut.cz/', 5))
+    crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 5)
+    H_matrix = np.array(crawl_urls_tuple[1])
     dangling_vector = calculateDanglingVector(H_matrix)
     H_matrix_without_zeros = replaceZeros(dangling_vector, H_matrix)
     pageRank_values = pageRank(H_matrix_without_zeros, dangling_vector)
+    match_urls_with_pagerank(crawl_urls_tuple[0], pageRank_values)
+

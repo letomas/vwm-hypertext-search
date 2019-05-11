@@ -116,4 +116,4 @@ def crawlAndCreateMatrix(start_url, number_to_scrape):
             for j in range(count_of_matrix_links):
                 H_matrix[i][j] = 0
 
-    return H_matrix
+    return (matrix_links, H_matrix)
