@@ -7,7 +7,11 @@ import html2text
 import json
 import sys
 
-from .models import WebPage
+import os
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "HypertextSearch.settings")
+
+from hypertext_search.models import WebPage
 
 
 def crawlAndCreateMatrix(start_url, number_to_scrape):
@@ -86,11 +90,7 @@ def crawlAndCreateMatrix(start_url, number_to_scrape):
                 matrix_links.append(reduced_link)
 
         data[crawl_url]['outlinksCount'] = len(data[crawl_url]['links'])
-
-        new_webpage = WebPage()
-        new_webpage.url = crawl_url
-        new_webpage.content = crawl_url_content
-        new_webpage.save()
+        data[crawl_url]['content'] = crawl_url_content
 
         d.popleft()
 
@@ -115,5 +115,15 @@ def crawlAndCreateMatrix(start_url, number_to_scrape):
         else:
             for j in range(count_of_matrix_links):
                 H_matrix[i][j] = 0
+
+    for data_url in matrix_links:
+        new_webpage = WebPage()
+        new_webpage.url = data_url
+        new_webpage.content = ''
+
+        if data[data_url].content:
+            new_webpage.content = data[data_url].content
+
+        new_webpage.save()
 
     return (matrix_links, H_matrix)

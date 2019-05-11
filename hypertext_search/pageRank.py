@@ -1,7 +1,11 @@
 import numpy as np
 from .scraper import crawlAndCreateMatrix
 
-from .models import WebPage
+import os
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "HypertextSearch.settings")
+
+from hypertext_search.models import WebPage
 
 
 def pagerankPowerMethod(H, a, eps=1.0e-8, alpha=0.85, iterations=50):
@@ -62,12 +66,12 @@ def match_urls_with_pagerank(urls, page_rank_values):
         url.rank = page_rank_values.item(lookup_index)
         url.save()
 
-def start_ranking():
-    WebPage.objects.all().delete()
-    crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 5)
-    H_matrix = np.array(crawl_urls_tuple[1])
-    dangling_vector = calculateDanglingVector(H_matrix)
-    H_matrix_without_zeros = replaceZeros(dangling_vector, H_matrix)
-    pageRank_values = pageRank(H_matrix_without_zeros, dangling_vector)
-    match_urls_with_pagerank(crawl_urls_tuple[0], pageRank_values)
+    
+WebPage.objects.all().delete()
+crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 5)
+H_matrix = np.array(crawl_urls_tuple[1])
+dangling_vector = calculateDanglingVector(H_matrix)
+H_matrix_without_zeros = replaceZeros(dangling_vector, H_matrix)
+pageRank_values = pageRank(H_matrix_without_zeros, dangling_vector)
+match_urls_with_pagerank(crawl_urls_tuple[0], pageRank_values)
 

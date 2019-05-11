@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from elasticsearch_dsl.query import Q
-from .pageRank import start_ranking
 from .search import WebPageIndex, bulk_indexing
+import subprocess
 
 
 def index(request):
@@ -14,6 +14,6 @@ def index(request):
 
 
 def start_crawler(request):
-    start_ranking()
+    subprocess.Popen(["python3.6", "scraper.py"])
     bulk_indexing()
     return redirect(index)
