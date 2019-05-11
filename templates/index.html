@@ -14,8 +14,15 @@
             {% block jsem_zrm %}
                 <div> {{test_input}}</div>
             {% endblock %}
-            <!--<ul>-->
-            <!--</ul>-->
         </div>
+        {% if result %}
+        <ul>
+            {% for page in result %}
+            <li>
+                <a href={{page.url}}>{{page.url}}</a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
     </body>
 </html>

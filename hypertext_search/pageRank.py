@@ -61,17 +61,21 @@ def replaceZeros(a, H, num = 1.0e-8):
 def match_urls_with_pagerank(urls, page_rank_values):
     mongo_urls = WebPage.objects.all()
     for url in mongo_urls:
-        lookup_index = urls.index(url)
-        #url.update(rank=page_rank_values.item(lookup_index))
-        url.rank = page_rank_values.item(lookup_index)
-        url.save()
+        try:
+            lookup_index = urls.index(url.url)
+            print("ahoj")
+            url.web_rank = page_rank_values.item(lookup_index)
+            url.save()
+        except ValueError:
+            print("error")
+            pass
 
-    
-WebPage.objects.all().delete()
-crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 5)
-H_matrix = np.array(crawl_urls_tuple[1])
-dangling_vector = calculateDanglingVector(H_matrix)
-H_matrix_without_zeros = replaceZeros(dangling_vector, H_matrix)
-pageRank_values = pageRank(H_matrix_without_zeros, dangling_vector)
-match_urls_with_pagerank(crawl_urls_tuple[0], pageRank_values)
+def rank_func():
+    WebPage.objects.all().delete()
+    crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 20)
+    H_matrix = np.array(crawl_urls_tuple[1])
+    dangling_vector = calculateDanglingVector(H_matrix)
+    H_matrix_without_zeros = replaceZeros(dangling_vector, H_matrix)
+    pageRank_values = pageRank(H_matrix_without_zeros, dangling_vector)
+    match_urls_with_pagerank(crawl_urls_tuple[0], pageRank_values)
 

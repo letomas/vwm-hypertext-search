@@ -121,8 +121,9 @@ def crawlAndCreateMatrix(start_url, number_to_scrape):
         new_webpage.url = data_url
         new_webpage.content = ''
 
-        if data[data_url].content:
-            new_webpage.content = data[data_url].content
+        if data_url in data:
+            if 'content' in data[data_url]:
+                new_webpage.content = data[data_url]['content']
 
         new_webpage.save()
 
