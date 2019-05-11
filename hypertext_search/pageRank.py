@@ -1,6 +1,5 @@
 import numpy as np
-from hypertext_search.scraper import crawlAndCreateMatrix
-from django.core.exceptions import ObjectDoesNotExist
+from .scraper import crawlAndCreateMatrix
 
 from .models import WebPage
 
@@ -56,17 +55,15 @@ def replaceZeros(a, H, num = 1.0e-8):
 
 
 def match_urls_with_pagerank(urls, page_rank_values):
-    for i in range(len(urls)):
-        try:
-            filter_webpage = WebPage.objects.filter(url=urls[i])
-        except ObjectDoesNotExist:
-            pass
-
-        filter_webpage.update(rank=page_rank_values.item(i))
-
+    mongo_urls = WebPage.objects.all()
+    for url in mongo_urls:
+        lookup_index = urls.index(url)
+        #url.update(rank=page_rank_values.item(lookup_index))
+        url.rank = page_rank_values.item(lookup_index)
+        url.save()
 
 def start_ranking():
-    #WebPage.objects.all().delete()
+    WebPage.objects.all().delete()
     crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 5)
     H_matrix = np.array(crawl_urls_tuple[1])
     dangling_vector = calculateDanglingVector(H_matrix)

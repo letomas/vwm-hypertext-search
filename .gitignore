@@ -3,3 +3,4 @@ launch.json
 settings.json
 venv
 .idea
+.hypertext_search/__pycache__
