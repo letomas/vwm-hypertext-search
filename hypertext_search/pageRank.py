@@ -1,10 +1,19 @@
 import os
+import time
 import numpy as np
 from .constants import *
-from .scraper import crawlAndCreateMatrix
-from .models import WebPage
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "HypertextSearch.settings")
+
+
+def timing(f):
+    def wrap(*args):
+        time1 = time.time()
+        ret = f(*args)
+        time2 = time.time()
+        print('{:s} function took {:.3f} ms'.format(f.__name__, (time2 - time1) * 1000.0))
+        return ret
+
+    return wrap
 
 
 def pagerankPowerMethod(H, a, eps=EPSILON, alpha=0.85, iterations=ITERATIONS):
@@ -24,6 +33,7 @@ def pagerankPowerMethod(H, a, eps=EPSILON, alpha=0.85, iterations=ITERATIONS):
     return v
 
 
+# @timing
 def pageRank(H, a, eps=EPSILON, iterations=ITERATIONS):
     n = H.shape[1]
     # initial vector
@@ -36,7 +46,6 @@ def pageRank(H, a, eps=EPSILON, iterations=ITERATIONS):
         last_v = v
         v = np.matmul(H, v) + np.matmul(a, np.ones((n, 1))) / n
         cnt += 1
-        
     return v
 
 
@@ -56,27 +65,4 @@ def replaceZeros(a, H, num=EPSILON):
             M[i, :] = np.where(M[i, :] == 0, num, M[i, :])
     return M
 
-
-def match_urls_with_pagerank(urls, page_rank_values):
-    mongo_urls = WebPage.objects.all()
-    for url in mongo_urls:
-        try:
-            lookup_index = urls.index(url.url)
-            url.web_rank = page_rank_values.item(lookup_index)
-            url.save()
-        except ValueError:
-            pass
-
-def rank_func():
-    WebPage.objects.all().delete()
-    crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', NUMBER_OF_PAGES)
-    H_matrix = np.array(crawl_urls_tuple[1])
-    dangling_vector = calculateDanglingVector(H_matrix)
-    H_matrix_without_zeros = replaceZeros(dangling_vector, H_matrix)
-    pageRank_values = pageRank(H_matrix_without_zeros, dangling_vector)
-    match_urls_with_pagerank(crawl_urls_tuple[0], pageRank_values)
-
-    for row in WebPage.objects.all():
-        if WebPage.objects.filter(url=row.url).count() > 1:
-            row.delete()
 

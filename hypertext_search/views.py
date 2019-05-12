@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from elasticsearch_dsl.query import Q
 from .models import WebPage
-from .pageRank import rank_func
+from .scraper import Crawler
 from .search import WebPageIndex, bulk_indexing
 from .constants import SEARCH_WEIGHT, PAGE_RANK_WEIGHT
 import http.client
 http.client._MAXHEADERS = 10000
+
+crawler = Crawler()
 
 
 def index(request):
@@ -19,7 +21,7 @@ def index(request):
             i += 1
     else:
         result = ''
-    return render(request, 'index.html', {'result': result})
+    return render(request, 'index.html', {'result': result, 'input_text': input_text})
 
 
 def get_all(request):
@@ -28,7 +30,8 @@ def get_all(request):
 
 
 def start_crawler(request):
-    rank_func()
+    crawler.crawl_function()
+    bulk_indexing()
     return redirect(index)
 
 
@@ -36,3 +39,7 @@ def bulk_index(request):
     bulk_indexing()
     return redirect(index)
 
+
+def rank(request):
+    crawler.rank_function()
+    return redirect(index)

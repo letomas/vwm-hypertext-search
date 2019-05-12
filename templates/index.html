@@ -30,6 +30,7 @@
         </div>
 
         {% if result %}
+        <h2>Results for "{{input_text}}"</h2>
         <table style="width:100%" , id="searchTable">
             <tr>
                 <th>URL</th>
@@ -51,7 +52,7 @@
                 var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
                 table = document.getElementById("searchTable");
                 switching = true;
-                dir = "asc";
+                dir = "desc";
                 while (switching) {
                     switching = false;
                     rows = table.rows;
@@ -76,8 +77,8 @@
                         switching = true;
                         switchcount++;
                     } else {
-                        if (switchcount == 0 && dir == "asc") {
-                            dir = "desc";
+                        if (switchcount == 0 && dir == "desc") {
+                            dir = "asc";
                             switching = true;
                         }
                     }
