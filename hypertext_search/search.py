@@ -1,20 +1,16 @@
 from elasticsearch_dsl.connections import connections
-from elasticsearch_dsl import DocType, Text, analyzer, tokenizer, Keyword, Date
+from elasticsearch_dsl import DocType, Text, Float
 from elasticsearch.helpers import bulk
 from elasticsearch import Elasticsearch
 from . import models
 
 connections.create_connection()
 
-html_strip = analyzer('html_strip',
-                      tokenizer="uax_url_email",
-                      filter=["lowercase"],
-                      char_filter=["html_strip"])
-
 
 class WebPageIndex(DocType):
-    url = Keyword()
+    url = Text()
     content = Text()
+    web_rank = Float()
 
     class Meta:
         index = 'webpage-index'
@@ -22,7 +18,7 @@ class WebPageIndex(DocType):
 
 def bulk_indexing():
     es = Elasticsearch()
-    WebPageIndex.init()
     es.indices.delete(index='webpage-index', ignore=[400, 404])
+    WebPageIndex.init()
     bulk(client=es, actions=(b.indexing() for b in models.WebPage.objects.all().iterator()))
 

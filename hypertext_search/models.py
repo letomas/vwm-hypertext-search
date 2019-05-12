@@ -11,7 +11,8 @@ class WebPage(models.Model):
         obj = WebPageIndex(
             meta={'id': self.id},
             url=self.url,
-            content=self.content
+            content=self.content,
+            web_rank=self.web_rank
         )
         obj.save()
         return obj.to_dict(include_meta=True)

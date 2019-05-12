@@ -7,4 +7,3 @@ urlpatterns = [
     path('bulk/', bulk_index),
     path('all/', get_all)
 ]
-

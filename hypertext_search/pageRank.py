@@ -1,14 +1,13 @@
-import numpy as np
-from .scraper import crawlAndCreateMatrix
-
 import os
+import numpy as np
+from .constants import *
+from .scraper import crawlAndCreateMatrix
+from .models import WebPage
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "HypertextSearch.settings")
 
-from hypertext_search.models import WebPage
 
-
-def pagerankPowerMethod(H, a, eps=1.0e-8, alpha=0.85, iterations=3):
+def pagerankPowerMethod(H, a, eps=EPSILON, alpha=0.85, iterations=ITERATIONS):
     n = H.shape[1]
     # initial vector
     v = np.ones((n, 1)) / n
@@ -25,7 +24,7 @@ def pagerankPowerMethod(H, a, eps=1.0e-8, alpha=0.85, iterations=3):
     return v
 
 
-def pageRank(H, a, eps=1.0e-8, iterations=50):
+def pageRank(H, a, eps=EPSILON, iterations=ITERATIONS):
     n = H.shape[1]
     # initial vector
     v = np.ones((n, 1)) / n
@@ -49,12 +48,12 @@ def calculateDanglingVector(H):
     return np.asmatrix(a)
 
 
-def replaceZeros(a, H, num = 1.0e-8):
+def replaceZeros(a, H, num=EPSILON):
     a = np.array(a)
     M = H
     for i in range(H.shape[0]):
         if a.item(i) == 0:
-            M[i, :] = np.where(M[i,:] == 0, num, M[i,:])
+            M[i, :] = np.where(M[i, :] == 0, num, M[i, :])
     return M
 
 
@@ -70,10 +69,14 @@ def match_urls_with_pagerank(urls, page_rank_values):
 
 def rank_func():
     WebPage.objects.all().delete()
-    crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 3)
+    crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', NUMBER_OF_PAGES)
     H_matrix = np.array(crawl_urls_tuple[1])
     dangling_vector = calculateDanglingVector(H_matrix)
     H_matrix_without_zeros = replaceZeros(dangling_vector, H_matrix)
     pageRank_values = pageRank(H_matrix_without_zeros, dangling_vector)
     match_urls_with_pagerank(crawl_urls_tuple[0], pageRank_values)
+
+    for row in WebPage.objects.all():
+        if WebPage.objects.filter(url=row.url).count() > 1:
+            row.delete()
 

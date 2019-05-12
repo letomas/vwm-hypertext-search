@@ -1,9 +1,9 @@
-import os
 from django.shortcuts import render, redirect
 from elasticsearch_dsl.query import Q
 from .models import WebPage
 from .pageRank import rank_func
 from .search import WebPageIndex, bulk_indexing
+from .constants import SEARCH_WEIGHT, PAGE_RANK_WEIGHT
 import http.client
 http.client._MAXHEADERS = 10000
 
@@ -11,7 +11,14 @@ http.client._MAXHEADERS = 10000
 def index(request):
     input_text = request.POST.get('input', '')
     if input_text:
-        result = WebPageIndex.search().query(Q('match', url=input_text))
+        s = WebPageIndex.search().query(Q('match', content=input_text))
+        s.sort('-score')
+        result = s.execute()
+        i = 0
+        for page in result:
+            page.score = SEARCH_WEIGHT * result.hits[i].meta.score + PAGE_RANK_WEIGHT * page.web_rank
+            i += 1
+
     else:
         result = ''
     return render(request, 'index.html', {'result': result})
@@ -23,7 +30,6 @@ def get_all(request):
 
 
 def start_crawler(request):
-    dir_path = os.path.dirname(os.path.realpath(__file__))
     rank_func()
     return redirect(index)
 
