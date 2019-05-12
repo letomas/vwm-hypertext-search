@@ -12,13 +12,11 @@ def index(request):
     input_text = request.POST.get('input', '')
     if input_text:
         s = WebPageIndex.search().query(Q('match', content=input_text))
-        s.sort('-score')
         result = s.execute()
         i = 0
         for page in result:
             page.score = SEARCH_WEIGHT * result.hits[i].meta.score + PAGE_RANK_WEIGHT * page.web_rank
             i += 1
-
     else:
         result = ''
     return render(request, 'index.html', {'result': result})

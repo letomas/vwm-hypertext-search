@@ -17,33 +17,72 @@
         </style>
     </head>
     <body>
-    <div>
-        <form method="post">{% csrf_token %}
-            <input type="text" name="input" id="search-input" placeholder="Pagerank with fulltext search">
-            <input type="submit" name="search">
-        </form>
-    </div>
-    <div>
-        {% block input %}
-        <div> {{test_input}}</div>
-        {% endblock %}
-    </div>
+        <div>
+            <form method="post">{% csrf_token %}
+                <input type="text" name="input" id="search-input" placeholder="Pagerank with fulltext search">
+                <input type="submit" name="search">
+            </form>
+        </div>
+        <div>
+            {% block input %}
+            <div> {{test_input}}</div>
+            {% endblock %}
+        </div>
 
-    {% if result %}
-    <table style="width:100%">
-        <tr>
-            <th>URL</th>
-            <th>Page Rank</th>
-            <th>Final Score</th>
-        </tr>
-        {% for page in result %}
-        <tr>
-            <td><a href={{page.url}}>{{page.url}}</a></td>
-            <td>{{page.web_rank}}</td>
-            <td>{{page.score}}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    {% endif %}
+        {% if result %}
+        <table style="width:100%" , id="searchTable">
+            <tr>
+                <th>URL</th>
+                <th onclick="sortTable(1)">Page Rank</th>
+                <th onclick="sortTable(2)">Final Score</th>
+            </tr>
+            {% for page in result %}
+            <tr>
+                <td><a href={{page.url}}>{{page.url}}</a></td>
+                <td>{{page.web_rank}}</td>
+                <td>{{page.score}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+
+        <script>
+            function sortTable(n) {
+                var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                table = document.getElementById("searchTable");
+                switching = true;
+                dir = "asc";
+                while (switching) {
+                    switching = false;
+                    rows = table.rows;
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        shouldSwitch = false;
+                        x = rows[i].getElementsByTagName("TD")[n];
+                        y = rows[i + 1].getElementsByTagName("TD")[n];
+                        if (dir == "asc") {
+                            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (dir == "desc") {
+                            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (shouldSwitch) {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                        switchcount++;
+                    } else {
+                        if (switchcount == 0 && dir == "asc") {
+                            dir = "desc";
+                            switching = true;
+                        }
+                    }
+                }
+            }
+        </script>
     </body>
 </html>
