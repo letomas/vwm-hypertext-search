@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'elasticsearch_dsl',
     'hypertext_search',
-    'django.contrib.postgres'
 ]
 
 ELASTICSEARCH_DSL = {

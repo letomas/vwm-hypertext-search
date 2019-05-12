@@ -8,7 +8,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "HypertextSearch.settings")
 from hypertext_search.models import WebPage
 
 
-def pagerankPowerMethod(H, a, eps=1.0e-8, alpha=0.85, iterations=50):
+def pagerankPowerMethod(H, a, eps=1.0e-8, alpha=0.85, iterations=3):
     n = H.shape[1]
     # initial vector
     v = np.ones((n, 1)) / n
@@ -63,16 +63,14 @@ def match_urls_with_pagerank(urls, page_rank_values):
     for url in mongo_urls:
         try:
             lookup_index = urls.index(url.url)
-            print("ahoj")
             url.web_rank = page_rank_values.item(lookup_index)
             url.save()
         except ValueError:
-            print("error")
             pass
 
 def rank_func():
     WebPage.objects.all().delete()
-    crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 20)
+    crawl_urls_tuple = crawlAndCreateMatrix('https://fit.cvut.cz/', 3)
     H_matrix = np.array(crawl_urls_tuple[1])
     dangling_vector = calculateDanglingVector(H_matrix)
     H_matrix_without_zeros = replaceZeros(dangling_vector, H_matrix)
