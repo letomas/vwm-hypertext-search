@@ -1,28 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-      {% block title %}<title>Search</title>{% endblock %}
+        {% block title %}<title>Search</title>{% endblock %}
+        <style>
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            td, th {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+        </style>
     </head>
     <body>
-        <div>
-            <form method="post">{% csrf_token %}
-                <input type="text" name="input" id="search-input" placeholder="Pagerank with fulltext search">
-                <input type="submit" name="search">
-            </form>
-        </div>
-        <div>
-            {% block input %}
-                <div> {{test_input}}</div>
-            {% endblock %}
-        </div>
-        {% if result %}
-        <ul>
-            {% for page in result %}
-            <li>
-                <a href={{page.url}}>{{page.url}}</a> {{page.score}}
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+    <div>
+        <form method="post">{% csrf_token %}
+            <input type="text" name="input" id="search-input" placeholder="Pagerank with fulltext search">
+            <input type="submit" name="search">
+        </form>
+    </div>
+    <div>
+        {% block input %}
+        <div> {{test_input}}</div>
+        {% endblock %}
+    </div>
+
+    {% if result %}
+    <table style="width:100%">
+        <tr>
+            <th>URL</th>
+            <th>Page Rank</th>
+            <th>Final Score</th>
+        </tr>
+        {% for page in result %}
+        <tr>
+            <td><a href={{page.url}}>{{page.url}}</a></td>
+            <td>{{page.web_rank}}</td>
+            <td>{{page.score}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
     </body>
 </html>
